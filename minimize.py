@@ -7,7 +7,6 @@ import math
 import winsound
 import time
 
-
 def initializeWeights(n_in,n_out):
     """
     # initializeWeights return the random weights for Neural Network given the
@@ -230,60 +229,6 @@ def nnObjFunction(params, *args):
 
     return (obj_val,obj_grad)
 
-
-
-def nnPredict(w1,w2,data):
-
-    """% nnPredict predicts the label of data given the parameter w1, w2 of Neural
-    % Network.
-
-    % Input:
-    % w1: matrix of weights of connections from input layer to hidden layers.
-    %     w1(i, j) represents the weight of connection from unit i in input
-    %     layer to unit j in hidden layer.
-    % w2: matrix of weights of connections from hidden layer to output layers.
-    %     w2(i, j) represents the weight of connection from unit i in input
-    %     layer to unit j in hidden layer.
-    % data: matrix of data. Each row of this matrix represents the feature
-    %       vector of a particular image
-
-    % Output:
-    % label: a column vector of predicted labels"""
-
-    labels = np.array([])
-
-    # set the number of nodes in input unit (not including bias unit)
-    n_input = data.shape[1];
-
-    # set the number of nodes in hidden unit (not including bias unit)
-    n_hidden = w1.shape[1];
-
-    # set the number of nodes in output unit
-    n_class = w2.shape[1];
-
-    bias = np.ones((data.shape[0],1))
-    data = np.append(data,bias, axis =1)
-
-    for p in range(0,data.shape[0]):
-        #print "Minimize:"+str(p)
-        z = np.empty(n_hidden+1)
-        for j in range(0,n_hidden):
-            z[j] = sigmoid(np.dot(w1[j,:],data[p,:]))
-        z[n_hidden] = 1
-        o = np.empty([n_class,1])
-        max = -1
-        o_class = -1
-        for l in range(0,n_class):
-            o[l] = sigmoid(np.dot(w2[l,:],z))
-            if(o[l]>max):
-                max = o[l]
-                o_class = l
-        labels = np.hstack((labels,np.array([o_class])))
-    return labels
-
-
-
-
 """**************Neural Network Script Starts here********************************"""
 
 train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
@@ -295,7 +240,7 @@ print train_label.shape
 n_input = train_data.shape[1];
 
 # set the number of nodes in hidden unit (not including bias unit)
-n_hidden = 25;
+n_hidden = 10;
 
 # set the number of nodes in output unit
 n_class = 10;
@@ -328,30 +273,11 @@ nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='
 w1 = nn_params.x[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
 w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
 
-
-#Test the computed parameters
-
-predicted_label = nnPredict(w1,w2,train_data)
-
-#find the accuracy on Training Dataset
-
-print('\n Training set Accuracy:' + str(100*np.mean((predicted_label == train_label).astype(float))) + '%')
-
-predicted_label = nnPredict(w1,w2,validation_data)
-
-#find the accuracy on Validation Dataset
-
-print('\n Validation set Accuracy:' + str(100*np.mean((predicted_label == validation_label).astype(float))) + '%')
-
-
-predicted_label = nnPredict(w1,w2,test_data)
-
-#find the accuracy on Validation Dataset
-
-print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
+np.save('w1.npy',w1)
+np.save('w2.npy',w2)
 
 i = 0
-while(i<30):
-    winsound.Beep(300,2000)
+while(i<10):
+    winsound.Beep(400,500)
     time.sleep(0.25)
     i += 1
